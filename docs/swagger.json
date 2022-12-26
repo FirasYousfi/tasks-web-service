@@ -1,0 +1,320 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is the documentation for the tasks-service-api.",
+        "title": "Tasks Service API",
+        "contact": {
+            "name": "Firas Yousfi",
+            "email": "firas.yousfi144@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/v1/api",
+    "paths": {
+        "/tasks": {
+            "get": {
+                "description": "list the existing tasks",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "list tasks",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Task"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "description": "add a new task to the tasks list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "create a task",
+                "parameters": [
+                    {
+                        "description": "New task",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.TaskDescription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/tasks/{id}": {
+            "get": {
+                "description": "get a specific task by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "task ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "description": "update a task by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "update a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "task ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New task description",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.TaskDescription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete a task from the list",
+                "summary": "delete a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "task ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "description": "update a task by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "update a task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "task ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New task description",
+                        "name": "task",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.TaskDescription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Task"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "405": {
+                        "description": "Method Not Allowed"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Status": {
+            "type": "string",
+            "enum": [
+                "New",
+                "Active",
+                "Closed",
+                "On-hold"
+            ],
+            "x-enum-varnames": [
+                "New",
+                "Active",
+                "Closed",
+                "OnHold"
+            ]
+        },
+        "entity.Task": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "description": "description of the task",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "priority": {
+                    "description": "priority is represented by an int from 1 to 10",
+                    "type": "integer",
+                    "default": 1,
+                    "maximum": 10,
+                    "minimum": 1
+                },
+                "status": {
+                    "description": "current status of the task",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.Status"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "title of the task",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.TaskDescription": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "description of the task",
+                    "type": "string"
+                },
+                "priority": {
+                    "description": "priority is represented by an int from 1 to 10",
+                    "type": "integer",
+                    "default": 1,
+                    "maximum": 10,
+                    "minimum": 1
+                },
+                "status": {
+                    "description": "current status of the task",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.Status"
+                        }
+                    ]
+                },
+                "title": {
+                    "description": "title of the task",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

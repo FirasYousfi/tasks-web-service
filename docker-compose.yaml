@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  database:
+    container_name: postgresql-database
+    image: postgres:14.1-alpine
+    restart: always
+    env_file: .env #easier way to specify env variables
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:

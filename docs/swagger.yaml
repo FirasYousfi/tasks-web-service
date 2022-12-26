@@ -1,0 +1,215 @@
+basePath: /v1/api
+definitions:
+  entity.Status:
+    enum:
+    - New
+    - Active
+    - Closed
+    - On-hold
+    type: string
+    x-enum-varnames:
+    - New
+    - Active
+    - Closed
+    - OnHold
+  entity.Task:
+    properties:
+      createdAt:
+        type: string
+      description:
+        description: description of the task
+        type: string
+      id:
+        type: string
+      priority:
+        default: 1
+        description: priority is represented by an int from 1 to 10
+        maximum: 10
+        minimum: 1
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.Status'
+        description: current status of the task
+      title:
+        description: title of the task
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  entity.TaskDescription:
+    properties:
+      description:
+        description: description of the task
+        type: string
+      priority:
+        default: 1
+        description: priority is represented by an int from 1 to 10
+        maximum: 10
+        minimum: 1
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/entity.Status'
+        description: current status of the task
+      title:
+        description: title of the task
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: firas.yousfi144@gmail.com
+    name: Firas Yousfi
+  description: This is the documentation for the tasks-service-api.
+  title: Tasks Service API
+  version: "1.0"
+paths:
+  /tasks:
+    get:
+      description: list the existing tasks
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            items:
+              $ref: '#/definitions/entity.Task'
+            type: array
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: list tasks
+    post:
+      consumes:
+      - application/json
+      description: add a new task to the tasks list
+      parameters:
+      - description: New task
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/entity.TaskDescription'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Task'
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: create a task
+  /tasks/{id}:
+    delete:
+      description: delete a task from the list
+      parameters:
+      - description: task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: delete a task
+    get:
+      description: get a specific task by its ID
+      parameters:
+      - description: task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Task'
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: get a task
+    patch:
+      consumes:
+      - application/json
+      description: update a task by ID
+      parameters:
+      - description: task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New task description
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/entity.TaskDescription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Task'
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: update a task
+    put:
+      consumes:
+      - application/json
+      description: update a task by ID
+      parameters:
+      - description: task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New task description
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/entity.TaskDescription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Task'
+        "400":
+          description: Bad Request
+        "405":
+          description: Method Not Allowed
+        "500":
+          description: Internal Server Error
+      summary: update a task
+schemes:
+- http
+swagger: "2.0"

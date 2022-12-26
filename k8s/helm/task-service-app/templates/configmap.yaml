@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "task-service-app.fullname" . }}
+  namespace: {{ .Values.namespace }}
+data:
+  PORT: {{ quote .Values.config.app.port }}
+  POSTGRES_HOST: {{ quote .Values.config.database.host }}
+  POSTGRES_PORT: {{ quote .Values.config.database.port }}
+  POSTGRES_DB: {{ quote .Values.config.database.db }}

@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "task-service-app.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "task-service-app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "task-service-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "task-service-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "task-service-app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http # http named port defined here, then would be refrenced in service to make sure constraint containerPort == targetPort is respected
+              containerPort: {{ .Values.config.app.port }} ## because it must be the same as the port EXPOSED in dockerfile, which the app is running on
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "task-service-app.fullname" . }}
+            - secretRef:
+                name: {{ include "task-service-app.fullname" . }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http # should be the port exposed by the app, so same as containerPort defined in deployment
+            initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.deployment.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.deployment.livenessProbe.successThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http # should be the port exposed by the app, so same as containerPort defined in deployment
+            initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
+            failureThreshold: {{ .Values.deployment.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.deployment.readinessProbe.successThreshold }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
