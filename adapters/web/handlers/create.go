@@ -51,6 +51,8 @@ func (c Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.res = *response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	encoder := json.NewEncoder(w)
 	err = encoder.Encode(c.res)
 	if err != nil {
@@ -58,8 +60,6 @@ func (c Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("failed to write response")
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
 	return
 }
 

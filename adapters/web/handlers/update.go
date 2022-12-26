@@ -66,6 +66,8 @@ func (u Update) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u.res = *response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	encoder := json.NewEncoder(w)
 	err = encoder.Encode(u.res)
 	if err != nil {
@@ -73,7 +75,5 @@ func (u Update) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("failed to write response")
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	return
 }
