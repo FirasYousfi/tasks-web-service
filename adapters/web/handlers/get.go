@@ -37,7 +37,7 @@ func (g Get) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	task, err := g.TaskService.GetByID(id)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		log.Error().Err(err).Msgf("failed to find task with id %s", id)
 		return
 	}

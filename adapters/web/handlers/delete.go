@@ -33,7 +33,7 @@ func (d Delete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err := d.TaskService.GetByID(id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		log.Error().Msgf("error: %s, occurred when getting task with ID %s", err.Error(), id)
 		return
 	}
