@@ -37,7 +37,7 @@ func basicAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Extract the username and password from the request header. If the Authentication header is not present or is invalid we know through the 'ok' variable
 		username, password, ok := r.BasicAuth()
-		if !ok {
+		if ok {
 			// Calculate SHA-256 hashes for the provided and expected usernames and passwords so that we ensure they have the same length
 			// that way the comparison with subtle.ConstantTimeCompare would always take the same time
 			usernameHash := sha256.Sum256([]byte(username))
