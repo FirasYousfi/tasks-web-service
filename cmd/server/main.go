@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/FirasYousfi/tasks-web-servcie/adapters/persistence/repository"
 	"github.com/FirasYousfi/tasks-web-servcie/application/service"
+	"github.com/FirasYousfi/tasks-web-servcie/config"
 	"github.com/FirasYousfi/tasks-web-servcie/infrastructure/database"
 	"github.com/FirasYousfi/tasks-web-servcie/infrastructure/router"
 	"github.com/gorilla/mux"
@@ -22,6 +23,7 @@ import (
 // @host      localhost:8080
 // @BasePath  /v1/api
 func main() {
+	config.BuildConfig()
 	err := database.InitializeDB()
 	if err != nil {
 		log.Fatalf("error Initializing database: %v", err)
