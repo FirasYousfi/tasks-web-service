@@ -24,7 +24,7 @@ func SetupRoutes(service interfaces.ITaskService, db *gorm.DB) *mux.Router {
 	r.Handle(fmt.Sprintf("%s/tasks/{id}", basePath), attachMiddleware(&handlers.Update{TaskService: service}, basicAuth)).Methods("PATCH")
 	r.Handle(fmt.Sprintf("%s/tasks/{id}", basePath), attachMiddleware(&handlers.Update{TaskService: service}, basicAuth)).Methods("PUT")
 
-	// liveness and readiness probes
+	// liveness and readiness probes, no need for auth middleware for those
 	r.Handle(fmt.Sprintf("/healthz"), &k8s.Liveness{}).Methods("GET")
 	r.Handle(fmt.Sprintf("/readyz"), &k8s.Readiness{DB: db}).Methods("GET")
 	return r
