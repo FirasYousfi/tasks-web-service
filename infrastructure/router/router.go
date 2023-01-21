@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/FirasYousfi/tasks-web-servcie/adapters/web/handlers"
 	"github.com/FirasYousfi/tasks-web-servcie/application/interfaces"
+	"github.com/FirasYousfi/tasks-web-servcie/config"
 	"github.com/FirasYousfi/tasks-web-servcie/k8s"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
@@ -42,8 +43,8 @@ func basicAuth(next http.Handler) http.Handler {
 			// that way the comparison with subtle.ConstantTimeCompare would always take the same time
 			usernameHash := sha256.Sum256([]byte(username))
 			passwordHash := sha256.Sum256([]byte(password))
-			expectedUsernameHash := sha256.Sum256([]byte("your expected username"))
-			expectedPasswordHash := sha256.Sum256([]byte("your expected password"))
+			expectedUsernameHash := sha256.Sum256([]byte(config.Config.Auth.Username))
+			expectedPasswordHash := sha256.Sum256([]byte(config.Config.Auth.Password))
 
 			// Use the subtle.ConstantTimeCompare() function to check if the provided username and password hashes equal the expected ones.
 			// Importantly, we should to do the work to evaluate both the username and password before checking the return values to avoid leaking information.
