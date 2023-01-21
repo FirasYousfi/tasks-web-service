@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FirasYousfi/tasks-web-servcie/domain/entity"
+	"strings"
 )
 
 var (
@@ -63,8 +64,9 @@ func ValidateTitle(title string) error {
 
 func ValidateStatus(status entity.Status) (entity.Status, error) {
 	if status == "" {
-		return entity.OnHold, nil
+		return entity.New, nil
 	}
+	status = entity.Status(strings.ToLower(string(status)))
 	switch status {
 	case entity.New, entity.Active, entity.Closed, entity.OnHold:
 		return status, nil

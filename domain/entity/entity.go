@@ -4,10 +4,10 @@ import "time"
 
 // string mapping with the possible values for status
 const (
-	New    Status = "New"
-	Active Status = "Active"
-	Closed Status = "Closed"
-	OnHold Status = "On-hold"
+	New    Status = "new"
+	Active Status = "active"
+	Closed Status = "closed"
+	OnHold Status = "on-hold"
 )
 
 // Status represents the current state of the task
