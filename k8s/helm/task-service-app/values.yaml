@@ -94,6 +94,8 @@ config:
     password: password
   app:
     port: 8080
+    username: admin
+    password: password
 
 
 deployment:
