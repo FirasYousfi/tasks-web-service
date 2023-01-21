@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/FirasYousfi/tasks-web-servcie/adapters/persistence/repository"
 	"github.com/FirasYousfi/tasks-web-servcie/application/service"
 	"github.com/FirasYousfi/tasks-web-servcie/config"
@@ -29,8 +30,8 @@ func main() {
 		log.Fatalf("error Initializing database: %v", err)
 	}
 	r := SetupHandlers(database.DB.GetDBConn())
-	log.Println("Serving on port 8080:")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Printf("Serving on port: %s", config.Config.Server.Port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", config.Config.Server.Port), r))
 }
 
 // SetupHandlers here is where all the dependency injection stuff happens.

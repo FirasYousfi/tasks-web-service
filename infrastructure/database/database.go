@@ -33,17 +33,8 @@ type Database struct {
 
 // InitializeDB Reads the user defined DB configuration and initializes the connection. If another DB struct implements the DbConnector interface, this InitializeDB function needs to be updated.
 func InitializeDB() error {
-	// This is because I wanted to use an interface for testability
-	configuration := &config.DbConfig{
-		Host:     config.GetEnv("POSTGRES_HOST", "127.0.0.1"),
-		User:     config.GetEnv("POSTGRES_USER", "user"),
-		Password: config.GetEnv("POSTGRES_PASSWORD", "password"),
-		Name:     config.GetEnv("POSTGRES_DB", "tasks"),
-		Port:     config.GetEnv("POSTGRES_PORT", "5432"),
-	}
-
 	DB = &Database{} //otherwise DB would be nil
-	DB.SetDBConf(configuration)
+	DB.SetDBConf(&config.Config.DB)
 	// Database used to persist tasks
 	return DB.SetDBConn()
 
