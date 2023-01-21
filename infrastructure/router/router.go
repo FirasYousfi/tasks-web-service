@@ -26,12 +26,15 @@ func SetupRoutes(service interfaces.ITaskService, db *gorm.DB) *mux.Router {
 	// liveness and readiness probes
 	r.Handle(fmt.Sprintf("/healthz"), &k8s.Liveness{}).Methods("GET")
 	r.Handle(fmt.Sprintf("/readyz"), &k8s.Readiness{DB: db}).Methods("GET")
-
+	// using middleware with gorilla mux
+	r.Use(basicAuth)
 	return r
 }
 
-func basicAuth(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+// To use middleware with the r.Use(MiddlewareFunc) provided by gorilla mux, the signature needs to be: type MiddlewareFunc func(http.Handler) http.Handler
+func basicAuth(next http.Handler) http.Handler {
+	//if 'f' is a function with the appropriate signature, HandlerFunc(f) is a Handler that calls f.
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Extract the username and password from the request header. If the Authentication header is not present or is invalid we know through the 'ok' variable
 		username, password, ok := r.BasicAuth()
 		if !ok {
@@ -60,5 +63,5 @@ func basicAuth(next http.HandlerFunc) http.HandlerFunc {
 		// header to inform the client that we expect them to use basic authentication and send a 401 Unauthorized response.
 		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	}
+	})
 }
