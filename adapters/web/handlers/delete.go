@@ -28,7 +28,7 @@ func (d Delete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		log.Error().Msg("task ID not provided in path")
+		log.Error().Msg("task ID not provided in request path")
 		return
 	}
 	_, err := d.TaskService.GetByID(id)
