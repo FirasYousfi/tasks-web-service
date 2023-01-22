@@ -20,13 +20,13 @@ var (
 		Title:       "test",
 		Description: "test",
 		Priority:    5,
-		Status:      "New",
+		Status:      "new",
 	}
 	FullUpdateRequest = entity.TaskDescription{
 		Title:       "testFullUpdate",
 		Description: "testFullUpdate",
 		Priority:    1,
-		Status:      "New",
+		Status:      "new",
 	}
 	PartialUpdateRequest = entity.TaskDescription{
 		Title:  "testPartialUpdate",
