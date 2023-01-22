@@ -30,7 +30,8 @@ func SetupRoutes(service interfaces.ITaskService, db *gorm.DB) *mux.Router {
 	return r
 }
 
-// To use middleware with the r.Use(MiddlewareFunc) provided by gorilla mux, the signature needs to be: type MiddlewareFunc func(http.Handler) http.Handler
+// To use middleware with the r.Use(MiddlewareFunc) provided by gorilla/mux, or with our attachMiddleware function,
+// the signature needs to be: type MiddlewareFunc func(http.Handler) http.Handler
 func basicAuth(next http.Handler) http.Handler {
 	//if 'f' is a function with the appropriate signature, HandlerFunc(f) is a Handler that calls f.
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
