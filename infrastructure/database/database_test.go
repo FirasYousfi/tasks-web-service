@@ -54,6 +54,7 @@ func TestDatabase_InitializeDB(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			DB = newMockDb()
+			config.BuildConfig()
 			if err := InitializeDB(); (err != nil) != tt.wantErr {
 				t.Errorf("InitializeDB() error = %v, wantErr %v", err, tt.wantErr)
 			}
