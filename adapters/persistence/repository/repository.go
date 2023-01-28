@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"github.com/FirasYousfi/tasks-web-servcie/application/interfaces"
 	"github.com/FirasYousfi/tasks-web-servcie/domain/entity"
 	"gorm.io/gorm"
 	"log"
@@ -13,8 +12,8 @@ type TaskRepository struct {
 	db *gorm.DB
 }
 
-// NewTaskRepository I think this would help in dependency injection later
-func NewTaskRepository(db *gorm.DB) interfaces.ITaskRepository {
+// NewTaskRepository is the constructor of a TaskRepository with the database dependency injected
+func NewTaskRepository(db *gorm.DB) *TaskRepository {
 	if db == nil {
 		log.Fatalf("nil db provided")
 	}

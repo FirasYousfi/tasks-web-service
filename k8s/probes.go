@@ -1,7 +1,7 @@
 package k8s
 
 import (
-	"gorm.io/gorm"
+	"github.com/FirasYousfi/tasks-web-servcie/infrastructure/database"
 	"net/http"
 )
 
@@ -9,7 +9,6 @@ type Liveness struct {
 }
 
 type Readiness struct {
-	DB *gorm.DB
 }
 
 // ServeHTTP defines the handling of liveness probe, checks just if app is alive
@@ -20,12 +19,12 @@ func (l Liveness) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP defines the handling of readiness probe, checks if app is ready for requests by seeing if DB is set and working.
 func (r Readiness) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	// if db is completely nil we cannot be ready
-	if r.DB == nil {
+	if database.DB.GetDBConn() == nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
 
-	db, err := r.DB.DB()
+	db, err := database.DB.GetDBConn().DB()
 	if err != nil || db.Ping() != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return

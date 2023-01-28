@@ -38,6 +38,6 @@ func main() {
 func SetupHandlers(db *gorm.DB) *mux.Router {
 	repo := repository.NewTaskRepository(db)
 	taskService := service.NewTaskService(repo)
-	r := router.SetupRoutes(taskService, db)
+	r := router.SetupRoutes(taskService)
 	return r
 }

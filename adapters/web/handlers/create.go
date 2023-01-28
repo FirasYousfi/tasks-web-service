@@ -62,12 +62,3 @@ func (c Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	return
 }
-
-///***INFOS****////
-/*
-Why defer?
-In the Go sample, if the "ParseResponse" call returns an error (and the function returns "early"), the "defer"
-will ensure that the response body will be closed. If the "ParseResponse" call is successful, then the "defer" will
-ensure that the response body will be closed.
-In both scenarios, the response body will be closed whether the operation was successful or whether it failed.
-*/

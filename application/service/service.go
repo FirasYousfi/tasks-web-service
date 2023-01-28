@@ -18,7 +18,7 @@ type TaskService struct {
 // NewTaskService Dependency Inversion Principle. DIP suggests that we should depend on abstractions (interfaces), not concrete classes.
 // => also that way we respect the Dependency Rule. This rule says that source code dependencies can only point inwards.
 // Inner circles never mention a name in an outer circle. Repository impl is in outer circle, but the interfaces are in the app layer.
-func NewTaskService(repo interfaces.ITaskRepository) interfaces.ITaskService {
+func NewTaskService(repo interfaces.ITaskRepository) *TaskService {
 	if repo == nil {
 		log.Fatalf("nil repo provided")
 	}

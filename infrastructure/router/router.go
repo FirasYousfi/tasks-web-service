@@ -9,13 +9,16 @@ import (
 	"github.com/FirasYousfi/tasks-web-servcie/config"
 	"github.com/FirasYousfi/tasks-web-servcie/k8s"
 	"github.com/gorilla/mux"
-	"gorm.io/gorm"
+	"github.com/rs/zerolog/log"
 	"net/http"
 )
 
 const basePath = "/v1/api"
 
-func SetupRoutes(service interfaces.ITaskService, db *gorm.DB) *mux.Router {
+func SetupRoutes(service interfaces.ITaskService) *mux.Router {
+	if service == nil {
+		log.Fatal().Msgf("nil service provided")
+	}
 	r := mux.NewRouter()
 	r.Handle(fmt.Sprintf("%s/tasks", basePath), attachMiddleware(&handlers.Create{TaskService: service}, basicAuth)).Methods("POST")
 	r.Handle(fmt.Sprintf("%s/tasks", basePath), attachMiddleware(&handlers.List{TaskService: service}, basicAuth)).Methods("GET")
@@ -26,7 +29,7 @@ func SetupRoutes(service interfaces.ITaskService, db *gorm.DB) *mux.Router {
 
 	// liveness and readiness probes, no need for auth middleware for those
 	r.Handle(fmt.Sprintf("/healthz"), &k8s.Liveness{}).Methods("GET")
-	r.Handle(fmt.Sprintf("/readyz"), &k8s.Readiness{DB: db}).Methods("GET")
+	r.Handle(fmt.Sprintf("/readyz"), &k8s.Readiness{}).Methods("GET")
 	return r
 }
 
