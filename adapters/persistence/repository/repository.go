@@ -75,7 +75,7 @@ func (t *Repository) CreateCollection(collection *entity.Collection) error {
 func (t *Repository) FindAllCollections() ([]*entity.Collection, error) {
 	var collections []*entity.Collection
 	// SELECT * FROM users;
-	tx := t.db.Find(&collections) // pointer to our array because it needs to be modified
+	tx := t.db.Model(entity.Collection{}).Preload("Tasks").Find(&collections) // pointer to our array because it needs to be modified
 	fmt.Println("here are the collections", collections)
 	if tx.Error != nil {
 		return nil, tx.Error

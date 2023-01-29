@@ -20,7 +20,7 @@ func SetupRoutes(service interfaces.IService) *mux.Router {
 		log.Fatal().Msgf("nil service provided")
 	}
 	r := mux.NewRouter()
-
+	r.Handle(fmt.Sprintf("%s/tasks", basePath), attachMiddleware(&handlers.ListTasks{Service: service}, basicAuth)).Methods("GET")
 	/*
 		// routes for task specific operations
 		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks", basePath), attachMiddleware(&handlers.CreateTask{Service: service}, basicAuth)).Methods("POST")
