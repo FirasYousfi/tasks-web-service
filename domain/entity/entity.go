@@ -28,3 +28,10 @@ type TaskDescription struct {
 	Priority    int    `json:"priority" minimum:"1" maximum:"10" default:"1"` // priority is represented by an int from 1 to 10
 	Status      Status `json:"status"`                                        // current status of the task
 }
+
+// Collection represents a collection of tasks
+type Collection struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Tasks []Task `json:"tasks"`
+}

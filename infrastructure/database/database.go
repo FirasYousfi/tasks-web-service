@@ -49,7 +49,7 @@ func (d *Database) SetDBConn() error {
 	}
 
 	// AutoMigrate will create tables, missing foreign keys, constraints, columns and indexes. You can give it multiple structs.
-	err = db.AutoMigrate(&entity.Task{})
+	err = db.AutoMigrate(&entity.Collection{})
 	if err != nil {
 		return err
 	}
