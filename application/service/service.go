@@ -5,7 +5,6 @@ import (
 	"github.com/FirasYousfi/tasks-web-servcie/application/interfaces"
 	"github.com/FirasYousfi/tasks-web-servcie/domain/entity"
 	"github.com/FirasYousfi/tasks-web-servcie/domain/validation"
-	"github.com/google/uuid"
 	"log"
 )
 
@@ -130,7 +129,7 @@ func (t *Service) UpdateTaskPartial(req *entity.TaskDescription, id string) (*en
 }
 
 func (t *Service) CreateCollection(description *entity.CollectionDescription) (*entity.Collection, error) {
-	collection := entity.Collection{ID: uuid.NewString(), CollectionDescription: *description}
+	collection := entity.Collection{CollectionDescription: *description}
 	log.Printf("creating collection with ID '%s' ...", collection.ID)
 
 	err := t.Repository.CreateCollection(&collection)
