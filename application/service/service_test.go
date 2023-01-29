@@ -37,25 +37,25 @@ var (
 type mockTaskRepository struct {
 }
 
-func (m mockTaskRepository) Create(task *entity.Task) error {
+func (m mockTaskRepository) CreateTask(task *entity.Task) error {
 	if reflect.DeepEqual(task.TaskDescription, TaskRequestInstance) {
 		return nil
 	}
 	return errors.New("unexpected values passed to the repository")
 }
 
-func (m mockTaskRepository) DeleteByID(id string) error {
-	_, err := m.FindByID(id)
+func (m mockTaskRepository) DeleteTaskByID(id string) error {
+	_, err := m.FindTaskByID(id)
 	return err
 }
 
-func (m mockTaskRepository) Update(fields map[string]interface{}, id string) error {
+func (m mockTaskRepository) UpdateTask(fields map[string]interface{}, id string) error {
 	fullUpdateValues := map[string]interface{}{"title": FullUpdateRequest.Title, "description": FullUpdateRequest.Description,
 		"priority": FullUpdateRequest.Priority, "status": FullUpdateRequest.Status}
 
 	partialUpdateValues := map[string]interface{}{"title": PartialUpdateRequest.Title, "status": PartialUpdateRequest.Status}
 	//Task should be found
-	_, err := m.FindByID(id)
+	_, err := m.FindTaskByID(id)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (m mockTaskRepository) Update(fields map[string]interface{}, id string) err
 	return nil
 }
 
-func (m mockTaskRepository) FindAll() ([]*entity.Task, error) {
+func (m mockTaskRepository) FindAllTasks() ([]*entity.Task, error) {
 	return []*entity.Task{{
 		ID:              "test1",
 		CreatedAt:       time.Time{},
@@ -84,7 +84,7 @@ func (m mockTaskRepository) FindAll() ([]*entity.Task, error) {
 	}}, nil
 }
 
-func (m mockTaskRepository) FindByID(id string) (*entity.Task, error) {
+func (m mockTaskRepository) FindTaskByID(id string) (*entity.Task, error) {
 	if id == testID {
 		return &entity.Task{
 			ID:              id,
@@ -106,7 +106,7 @@ func (m mockTaskRepository) FindByID(id string) (*entity.Task, error) {
 
 func TestNewTaskService(t *testing.T) {
 	type args struct {
-		repo interfaces.ITaskRepository
+		repo interfaces.IRepository
 	}
 	tests := []struct {
 		name string
@@ -116,7 +116,7 @@ func TestNewTaskService(t *testing.T) {
 		{
 			name: "should pass",
 			args: args{mockTaskRepository{}},
-			want: &TaskService{TaskRepository: mockTaskRepository{}},
+			want: &Service{Repository: mockTaskRepository{}},
 		},
 	}
 	for _, tt := range tests {
@@ -130,7 +130,7 @@ func TestNewTaskService(t *testing.T) {
 
 func TestTaskService_Create(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	type args struct {
 		req *entity.TaskDescription
@@ -152,17 +152,17 @@ func TestTaskService_Create(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			got, err := t.Create(tt.args.req)
+			got, err := t.CreateTask(tt.args.req)
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("CreateTask() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			//the stuff that is added by gorm is already tested on repo side, here we only need to check if the request is propagated
 			if !reflect.DeepEqual(got.TaskDescription, *tt.want) {
-				t1.Errorf("Create() got = %v, want %v", got.TaskDescription, tt.want)
+				t1.Errorf("CreateTask() got = %v, want %v", got.TaskDescription, tt.want)
 			}
 		})
 	}
@@ -170,7 +170,7 @@ func TestTaskService_Create(t1 *testing.T) {
 
 func TestTaskService_DeleteByID(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	type args struct {
 		id string
@@ -196,11 +196,11 @@ func TestTaskService_DeleteByID(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			if err := t.DeleteByID(tt.args.id); (err != nil) != tt.wantErr {
-				t1.Errorf("DeleteByID() error = %v, wantErr %v", err, tt.wantErr)
+			if err := t.DeleteTaskByID(tt.args.id); (err != nil) != tt.wantErr {
+				t1.Errorf("DeleteTaskByID() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -208,7 +208,7 @@ func TestTaskService_DeleteByID(t1 *testing.T) {
 
 func TestTaskService_Get(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	tests := []struct {
 		name    string
@@ -235,16 +235,16 @@ func TestTaskService_Get(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			got, err := t.Get()
+			got, err := t.GetTasks()
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("GetTasks() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("Get() got = %v, want %v", got, tt.want)
+				t1.Errorf("GetTasks() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -252,7 +252,7 @@ func TestTaskService_Get(t1 *testing.T) {
 
 func TestTaskService_GetByID(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	type args struct {
 		id string
@@ -286,16 +286,16 @@ func TestTaskService_GetByID(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			got, err := t.GetByID(tt.args.id)
+			got, err := t.GetTaskByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("GetByID() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("GetTaskByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("GetByID() got = %v, want %v", got, tt.want)
+				t1.Errorf("GetTaskByID() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -303,7 +303,7 @@ func TestTaskService_GetByID(t1 *testing.T) {
 
 func TestTaskService_UpdateFully(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	type args struct {
 		req *entity.TaskDescription
@@ -342,16 +342,16 @@ func TestTaskService_UpdateFully(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			got, err := t.UpdateFully(tt.args.req, tt.args.id)
+			got, err := t.UpdateTaskFully(tt.args.req, tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("UpdateFully() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("UpdateTaskFully() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("UpdateFully() got = %v, want %v", got, tt.want)
+				t1.Errorf("UpdateTaskFully() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -359,7 +359,7 @@ func TestTaskService_UpdateFully(t1 *testing.T) {
 
 func TestTaskService_UpdatePartial(t1 *testing.T) {
 	type fields struct {
-		TaskRepository interfaces.ITaskRepository
+		TaskRepository interfaces.IRepository
 	}
 	type args struct {
 		req *entity.TaskDescription
@@ -398,16 +398,16 @@ func TestTaskService_UpdatePartial(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskService{
-				TaskRepository: tt.fields.TaskRepository,
+			t := &Service{
+				Repository: tt.fields.TaskRepository,
 			}
-			got, err := t.UpdatePartial(tt.args.req, tt.args.id)
+			got, err := t.UpdateTaskPartial(tt.args.req, tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("UpdatePartial() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("UpdateTaskPartial() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("UpdatePartial() got = %v, want %v", got, tt.want)
+				t1.Errorf("UpdateTaskPartial() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

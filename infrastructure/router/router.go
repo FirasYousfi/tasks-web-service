@@ -15,25 +15,26 @@ import (
 
 const basePath = "/v1/api"
 
-func SetupRoutes(service interfaces.ITaskService) *mux.Router {
+func SetupRoutes(service interfaces.IService) *mux.Router {
 	if service == nil {
 		log.Fatal().Msgf("nil service provided")
 	}
 	r := mux.NewRouter()
 
-	// routes for task specific operations
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks", basePath), attachMiddleware(&handlers.Create{TaskService: service}, basicAuth)).Methods("POST")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks", basePath), attachMiddleware(&handlers.List{TaskService: service}, basicAuth)).Methods("GET")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.Delete{TaskService: service}, basicAuth)).Methods("DELETE")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.Get{TaskService: service}, basicAuth)).Methods("GET")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.Update{TaskService: service}, basicAuth)).Methods("PATCH")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.Update{TaskService: service}, basicAuth)).Methods("PUT")
-
+	/*
+		// routes for task specific operations
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks", basePath), attachMiddleware(&handlers.CreateTask{Service: service}, basicAuth)).Methods("POST")
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks", basePath), attachMiddleware(&handlers.ListTasks{TaskService: service}, basicAuth)).Methods("GET")
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.DeleteTask{TaskService: service}, basicAuth)).Methods("DELETE")
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.GetTask{TaskService: service}, basicAuth)).Methods("GET")
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.UpdateTask{TaskService: service}, basicAuth)).Methods("PATCH")
+		r.Handle(fmt.Sprintf("%s/collections/{collectionId}/tasks/{taskId}", basePath), attachMiddleware(&handlers.UpdateTask{TaskService: service}, basicAuth)).Methods("PUT")
+	*/
 	// routes for collection specific operations
-	r.Handle(fmt.Sprintf("%s/collections", basePath), attachMiddleware(&handlers.Create{TaskService: service}, basicAuth)).Methods("POST")
-	r.Handle(fmt.Sprintf("%s/collections", basePath), attachMiddleware(&handlers.List{TaskService: service}, basicAuth)).Methods("GET")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}", basePath), attachMiddleware(&handlers.Delete{TaskService: service}, basicAuth)).Methods("DELETE")
-	r.Handle(fmt.Sprintf("%s/collections/{collectionId}", basePath), attachMiddleware(&handlers.Get{TaskService: service}, basicAuth)).Methods("GET")
+	r.Handle(fmt.Sprintf("%s/collections", basePath), attachMiddleware(&handlers.CreateCollection{Service: service}, basicAuth)).Methods("POST")
+	r.Handle(fmt.Sprintf("%s/collections", basePath), attachMiddleware(&handlers.ListCollections{Service: service}, basicAuth)).Methods("GET")
+	r.Handle(fmt.Sprintf("%s/collections/{collectionId}", basePath), attachMiddleware(&handlers.DeleteCollection{Service: service}, basicAuth)).Methods("DELETE")
+	r.Handle(fmt.Sprintf("%s/collections/{collectionId}", basePath), attachMiddleware(&handlers.GetCollection{Service: service}, basicAuth)).Methods("GET")
 
 	// liveness and readiness probes, no need for auth middleware for those
 	r.Handle(fmt.Sprintf("/healthz"), &k8s.Liveness{}).Methods("GET")

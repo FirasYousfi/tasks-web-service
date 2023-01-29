@@ -1,6 +1,9 @@
 package entity
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 // string mapping with the possible values for status
 const (
@@ -15,9 +18,10 @@ type Status string
 
 // Task Represents the whole task that will be modeled with gorm DB
 type Task struct {
-	ID        string    `gorm:"primary_key" json:"id"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
+	gorm.Model
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+	CollectionID string    `json:"collectionId"`
 	TaskDescription
 }
 
@@ -31,7 +35,12 @@ type TaskDescription struct {
 
 // Collection represents a collection of tasks
 type Collection struct {
-	ID    string `json:"id"`
+	ID string `gorm:"primary_key" json:"id"`
+	CollectionDescription
+}
+
+// CollectionDescription represents a collection of tasks
+type CollectionDescription struct {
 	Name  string `json:"name"`
-	Tasks []Task `json:"tasks"`
+	Tasks []Task `gorm:"foreignKey:CollectionID" json:"tasks"`
 }

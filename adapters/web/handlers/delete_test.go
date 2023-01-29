@@ -20,13 +20,13 @@ func TestDelete_ServeHTTP(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  Delete
+		fields  DeleteTask
 		request *http.Request
 		want    want
 	}{
 		{
 			name: "should delete item successfully",
-			fields: Delete{
+			fields: DeleteTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validReq, map[string]string{"id": testUpdateTask.ID}),
@@ -36,7 +36,7 @@ func TestDelete_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to delete task with StatusMethodNotAllowed",
-			fields: Delete{
+			fields: DeleteTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(methodNotAllowedReq, map[string]string{"id": testUpdateTask.ID}),
@@ -46,7 +46,7 @@ func TestDelete_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail because no id provided as path parameter",
-			fields: Delete{
+			fields: DeleteTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validReq, map[string]string{"id": ""}),
@@ -63,7 +63,7 @@ func TestDelete_ServeHTTP(t *testing.T) {
 			// Having a recorder for each separate request is safer!
 			response := httptest.NewRecorder()
 
-			d := Delete{
+			d := DeleteTask{
 				TaskService: tt.fields.TaskService,
 			}
 			d.ServeHTTP(response, tt.request)

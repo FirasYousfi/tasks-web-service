@@ -36,7 +36,7 @@ func main() {
 
 // SetupHandlers here is where all the dependency injection stuff happens.
 func SetupHandlers(db *gorm.DB) *mux.Router {
-	repo := repository.NewTaskRepository(db)
+	repo := repository.NewRepository(db)
 	taskService := service.NewTaskService(repo)
 	r := router.SetupRoutes(taskService)
 	return r

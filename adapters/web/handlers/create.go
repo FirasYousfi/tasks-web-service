@@ -2,29 +2,22 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/FirasYousfi/tasks-web-servcie/application/interfaces"
-	"github.com/FirasYousfi/tasks-web-servcie/domain/entity"
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
 )
 
-// Create is the struct used for that will implement the Handler interface for the creation
-type Create struct {
-	req         entity.TaskDescription
-	res         entity.Task
-	TaskService interfaces.ITaskService
-}
-
-// @Summary create a task
-// @Description  add a new task to the tasks list
+// @Summary create a collection
+// @Description  add a new collection to the collections list
 // @Produce json
 // @Accept	json
-// @Param   task  body  entity.TaskDescription  true  "New task"
-// @Success 201 {object} entity.Task
+// @Param   collection  body  entity.CollectionDescription  true  "New collection"
+// @Success 201 {object} entity.Collection
 // @Failure 405,400,500
-// @Router /tasks [post]
-func (c Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// @Router /collections [post]
+//
+// ServeHTTP implements the handler interface to handle deleting the collections
+func (c CreateCollection) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -43,10 +36,10 @@ func (c Create) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := c.TaskService.Create(&c.req)
+	response, err := c.Service.CreateCollection(&c.req)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Error().Err(err).Msg("failed to create task")
+		log.Error().Err(err).Msg("failed to create collection")
 		return
 	}
 

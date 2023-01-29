@@ -47,7 +47,7 @@ func newMockTaskService(tasks []*entity.Task) *mockTaskService {
 	return &mockTaskService{tasks}
 }
 
-func (t mockTaskService) Create(taskDescription *entity.TaskDescription) (*entity.Task, error) {
+func (t mockTaskService) CreateTask(taskDescription *entity.TaskDescription) (*entity.Task, error) {
 	task := entity.Task{
 		ID:              testCreateTask.ID,
 		TaskDescription: *taskDescription,
@@ -56,11 +56,11 @@ func (t mockTaskService) Create(taskDescription *entity.TaskDescription) (*entit
 	return &task, nil
 }
 
-func (t mockTaskService) Get() ([]*entity.Task, error) {
+func (t mockTaskService) GetTasks() ([]*entity.Task, error) {
 	return t.tasks, nil
 }
 
-func (t mockTaskService) GetByID(id string) (*entity.Task, error) {
+func (t mockTaskService) GetTaskByID(id string) (*entity.Task, error) {
 	for i := range t.tasks {
 		if t.tasks[i].ID == id {
 			return t.tasks[i], nil
@@ -69,7 +69,7 @@ func (t mockTaskService) GetByID(id string) (*entity.Task, error) {
 	return nil, fmt.Errorf("element with ID %s not found", id)
 }
 
-func (t mockTaskService) DeleteByID(id string) error {
+func (t mockTaskService) DeleteTaskByID(id string) error {
 	for i := range t.tasks {
 		if t.tasks[i].ID == id {
 			t.tasks[i] = t.tasks[len(t.tasks)-1] // put last element there since order does not matter
@@ -81,7 +81,7 @@ func (t mockTaskService) DeleteByID(id string) error {
 }
 
 // we tested the functionality already in the service package, so no need to put in a lot of logic in this simple mock
-func (t mockTaskService) UpdatePartial(taskDescription *entity.TaskDescription, id string) (*entity.Task, error) {
+func (t mockTaskService) UpdateTaskPartial(taskDescription *entity.TaskDescription, id string) (*entity.Task, error) {
 	for i := range t.tasks {
 		if t.tasks[i].ID == id {
 			t.tasks[i].TaskDescription = *taskDescription
@@ -91,7 +91,7 @@ func (t mockTaskService) UpdatePartial(taskDescription *entity.TaskDescription, 
 	return nil, fmt.Errorf("element with ID %s not found", id)
 }
 
-func (t mockTaskService) UpdateFully(taskDescription *entity.TaskDescription, id string) (*entity.Task, error) {
+func (t mockTaskService) UpdateTaskFully(taskDescription *entity.TaskDescription, id string) (*entity.Task, error) {
 	for i := range t.tasks {
 		if t.tasks[i].ID == id {
 			t.tasks[i].TaskDescription = *taskDescription
@@ -115,13 +115,13 @@ func TestCreate_ServeHTTP(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  Create
+		fields  CreateTask
 		request *http.Request
 		want    want
 	}{
 		{
 			name: "should create item successfully",
-			fields: Create{ // no need to fill it with req and res because those get populated inside the handler itself
+			fields: CreateTask{ // no need to fill it with req and res because those get populated inside the handler itself
 				TaskService: taskService,
 			},
 			request: validReq,
@@ -132,7 +132,7 @@ func TestCreate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to create tasks with StatusMethodNotAllowed",
-			fields: Create{
+			fields: CreateTask{
 				TaskService: taskService,
 			},
 			request: methodNotAllowedReq,
@@ -143,7 +143,7 @@ func TestCreate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to create because body is not a json",
-			fields: Create{
+			fields: CreateTask{
 				TaskService: taskService,
 			},
 			request: invalidBodyFormatReq,
@@ -158,7 +158,7 @@ func TestCreate_ServeHTTP(t *testing.T) {
 			// Having a recorder for each separate request is safer!
 			response := httptest.NewRecorder()
 
-			c := Create{
+			c := CreateTask{
 				req:         tt.fields.req,
 				res:         tt.fields.res,
 				TaskService: tt.fields.TaskService,

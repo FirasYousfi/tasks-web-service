@@ -56,13 +56,13 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  Update
+		fields  UpdateTask
 		request *http.Request
 		want    want
 	}{
 		{
 			name: "should update item fully successfully",
-			fields: Update{ // no need to fill it with req and res because those get populated inside the handler itself
+			fields: UpdateTask{ // no need to fill it with req and res because those get populated inside the handler itself
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validPutReq, map[string]string{"id": testUpdateTask.ID}),
@@ -73,7 +73,7 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should update item partially successfully",
-			fields: Update{ // no need to fill it with req and res because those get populated inside the handler itself
+			fields: UpdateTask{ // no need to fill it with req and res because those get populated inside the handler itself
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validPatchReq, map[string]string{"id": testUpdateTask.ID}),
@@ -84,7 +84,7 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to create tasks with StatusMethodNotAllowed",
-			fields: Update{
+			fields: UpdateTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(methodNotAllowedReq, map[string]string{"id": testUpdateTask.ID}),
@@ -95,7 +95,7 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to create because body is not a json",
-			fields: Update{
+			fields: UpdateTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(invalidBodyReq, map[string]string{"id": testUpdateTask.ID}),
@@ -106,7 +106,7 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail because no id provided in path params",
-			fields: Update{
+			fields: UpdateTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(invalidPathParamReq, map[string]string{"id": ""}),
@@ -125,7 +125,7 @@ func TestUpdate_ServeHTTP(t *testing.T) {
 			// Having a recorder for each separate request is safer!
 			response := httptest.NewRecorder()
 
-			u := Update{
+			u := UpdateTask{
 				req:         tt.fields.req,
 				res:         tt.fields.res,
 				TaskService: tt.fields.TaskService,

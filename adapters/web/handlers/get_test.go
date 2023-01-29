@@ -41,13 +41,13 @@ func TestGet_ServeHTTP(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  Get
+		fields  GetTask
 		request *http.Request
 		want    want
 	}{
 		{
 			name: "should get item successfully",
-			fields: Get{ // no need to fill it with req and res because those get populated inside the handler itself
+			fields: GetTask{ // no need to fill it with req and res because those get populated inside the handler itself
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validReq, map[string]string{"id": testUpdateTask.ID}),
@@ -58,7 +58,7 @@ func TestGet_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to get task with StatusMethodNotAllowed",
-			fields: Get{
+			fields: GetTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(methodNotAllowedReq, map[string]string{"id": testUpdateTask.ID}),
@@ -69,7 +69,7 @@ func TestGet_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail because no id provided as path parameter",
-			fields: Get{
+			fields: GetTask{
 				TaskService: taskService,
 			},
 			request: mux.SetURLVars(validReq, map[string]string{"id": ""}),
@@ -87,7 +87,7 @@ func TestGet_ServeHTTP(t *testing.T) {
 			// Having a recorder for each separate request is safer!
 			response := httptest.NewRecorder()
 
-			u := Get{
+			u := GetTask{
 				res:         tt.fields.res,
 				TaskService: tt.fields.TaskService,
 			}

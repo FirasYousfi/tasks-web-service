@@ -2,20 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/FirasYousfi/tasks-web-servcie/application/interfaces"
 	"github.com/FirasYousfi/tasks-web-servcie/domain/entity"
 	"github.com/gorilla/mux"
 	"github.com/rs/zerolog/log"
 	"io"
 	"net/http"
 )
-
-// Update represents the struct that implement the handler for update
-type Update struct {
-	req         entity.TaskDescription
-	res         entity.Task
-	TaskService interfaces.ITaskService
-}
 
 // @Summary update a task
 // @Description  update a task by ID
@@ -29,7 +21,7 @@ type Update struct {
 // @Router /tasks/{id} [patch]
 //
 // ServeHTTP implements the handler interface to handle updating the tasks
-func (u Update) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (u UpdateTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Both requests have the same path, so they should have the same handler depending on the request method
 	if r.Method != http.MethodPut && r.Method != http.MethodPatch {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -48,7 +40,7 @@ func (u Update) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		log.Error().Err(err).Msg("failed to decode body")
 		return
 	}
-	id := mux.Vars(r)["id"]
+	id := mux.Vars(r)["taskId"]
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		log.Error().Msg("task ID not provided in path")
@@ -56,9 +48,9 @@ func (u Update) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	var response *entity.Task
 	if r.Method == http.MethodPut { //PUT here
-		response, err = u.TaskService.UpdateFully(&u.req, id)
+		response, err = u.Service.UpdateTaskFully(&u.req, id)
 	} else { //PATCH here
-		response, err = u.TaskService.UpdatePartial(&u.req, id)
+		response, err = u.Service.UpdateTaskPartial(&u.req, id)
 	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

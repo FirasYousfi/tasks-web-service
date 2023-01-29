@@ -23,13 +23,13 @@ func TestList_ServeHTTP(t *testing.T) {
 	}
 	tests := []struct {
 		name    string
-		fields  List
+		fields  ListTasks
 		request *http.Request
 		want    want
 	}{
 		{
 			name: "should list tasks successfully",
-			fields: List{
+			fields: ListTasks{
 				TaskService: taskService,
 			},
 			request: validReq,
@@ -40,7 +40,7 @@ func TestList_ServeHTTP(t *testing.T) {
 		},
 		{
 			name: "should fail to list tasks with StatusMethodNotAllowed",
-			fields: List{
+			fields: ListTasks{
 				TaskService: taskService,
 			},
 			request: methodNotAllowedReq,
@@ -55,7 +55,7 @@ func TestList_ServeHTTP(t *testing.T) {
 			// Having a recorder for each separate request is safer!
 			response := httptest.NewRecorder()
 
-			l := List{
+			l := ListTasks{
 				res:         tt.fields.res,
 				TaskService: tt.fields.TaskService,
 			}

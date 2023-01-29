@@ -9,56 +9,56 @@ import (
 	"log"
 )
 
-// TaskService The attributes should be the dependencies needed from the outer layer's stuff, those will be injected
+// Service The attributes should be the dependencies needed from the outer layer's stuff, those will be injected
 // DIP happens here,
-type TaskService struct {
-	TaskRepository interfaces.ITaskRepository
+type Service struct {
+	Repository interfaces.IRepository
 }
 
 // NewTaskService Dependency Inversion Principle. DIP suggests that we should depend on abstractions (interfaces), not concrete classes.
-// => also that way we respect the Dependency Rule. This rule says that source code dependencies can only point inwards.
+// also that way we respect the Dependency Rule. This rule says that source code dependencies can only point inwards.
 // Inner circles never mention a name in an outer circle. Repository impl is in outer circle, but the interfaces are in the app layer.
-func NewTaskService(repo interfaces.ITaskRepository) *TaskService {
+func NewTaskService(repo interfaces.IRepository) *Service {
 	if repo == nil {
 		log.Fatalf("nil repo provided")
 	}
-	return &TaskService{TaskRepository: repo}
+	return &Service{Repository: repo}
 }
 
-func (t *TaskService) Create(req *entity.TaskDescription) (*entity.Task, error) {
+func (t *Service) CreateTask(req *entity.TaskDescription) (*entity.Task, error) {
 	description, err := validation.ValidateParams(req)
 	if err != nil {
 		return nil, err
 	}
 
-	task := entity.Task{ID: uuid.NewString(), TaskDescription: *description}
+	task := entity.Task{TaskDescription: *description}
 	log.Printf("creating task with ID '%s' ...", task.ID)
 
-	err = t.TaskRepository.Create(&task)
+	err = t.Repository.CreateTask(&task)
 	if err != nil {
 		return nil, err
 	}
 	return &task, err
 }
 
-func (t *TaskService) Get() ([]*entity.Task, error) {
+func (t *Service) GetTasks() ([]*entity.Task, error) {
 	log.Printf("listing all tasks ...")
-	return t.TaskRepository.FindAll()
+	return t.Repository.FindAllTasks()
 }
 
-func (t *TaskService) DeleteByID(id string) error {
+func (t *Service) DeleteTaskByID(id string) error {
 	log.Printf("deleting task with id '%s' ...", id)
-	return t.TaskRepository.DeleteByID(id)
+	return t.Repository.DeleteTaskByID(id)
 }
 
-func (t *TaskService) GetByID(id string) (*entity.Task, error) {
+func (t *Service) GetTaskByID(id string) (*entity.Task, error) {
 	log.Printf("getting task with id '%s' ...", id)
-	return t.TaskRepository.FindByID(id)
+	return t.Repository.FindTaskByID(id)
 }
 
-func (t *TaskService) UpdateFully(req *entity.TaskDescription, id string) (*entity.Task, error) {
+func (t *Service) UpdateTaskFully(req *entity.TaskDescription, id string) (*entity.Task, error) {
 	log.Printf("updating task with id '%s' ...", id)
-	_, err := t.TaskRepository.FindByID(id)
+	_, err := t.Repository.FindTaskByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +68,12 @@ func (t *TaskService) UpdateFully(req *entity.TaskDescription, id string) (*enti
 	}
 
 	values := map[string]interface{}{"title": request.Title, "description": request.Description, "priority": request.Priority, "status": request.Status}
-	err = t.TaskRepository.Update(values, id)
+	err = t.Repository.UpdateTask(values, id)
 	if err != nil {
 		return nil, err
 	}
 
-	task, err := t.TaskRepository.FindByID(id)
+	task, err := t.Repository.FindTaskByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -81,9 +81,9 @@ func (t *TaskService) UpdateFully(req *entity.TaskDescription, id string) (*enti
 	return task, nil
 }
 
-func (t *TaskService) UpdatePartial(req *entity.TaskDescription, id string) (*entity.Task, error) {
+func (t *Service) UpdateTaskPartial(req *entity.TaskDescription, id string) (*entity.Task, error) {
 	log.Printf("updating task with id '%s' ...", id)
-	_, err := t.TaskRepository.FindByID(id)
+	_, err := t.Repository.FindTaskByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,12 +113,12 @@ func (t *TaskService) UpdatePartial(req *entity.TaskDescription, id string) (*en
 	if req.Status != "" {
 		values["status"] = req.Status
 	}
-	err = t.TaskRepository.Update(values, id)
+	err = t.Repository.UpdateTask(values, id)
 	if err != nil {
 		return nil, err
 	}
 
-	task, err := t.TaskRepository.FindByID(id)
+	task, err := t.Repository.FindTaskByID(id)
 	if err != nil {
 		return nil, err
 	}
@@ -127,4 +127,30 @@ func (t *TaskService) UpdatePartial(req *entity.TaskDescription, id string) (*en
 		return nil, err
 	}
 	return task, nil
+}
+
+func (t *Service) CreateCollection(description *entity.CollectionDescription) (*entity.Collection, error) {
+	collection := entity.Collection{ID: uuid.NewString(), CollectionDescription: *description}
+	log.Printf("creating collection with ID '%s' ...", collection.ID)
+
+	err := t.Repository.CreateCollection(&collection)
+	if err != nil {
+		return nil, err
+	}
+	return &collection, err
+}
+
+func (t *Service) GetCollections() ([]*entity.Collection, error) {
+	log.Printf("listing collections ...")
+	return t.Repository.FindAllCollections()
+}
+
+func (t *Service) GetCollectionsByID(id string) (*entity.Collection, error) {
+	log.Printf("getting collection with id '%s' ...", id)
+	return t.Repository.FindCollectionByID(id)
+}
+
+func (t *Service) DeleteCollectionByID(id string) error {
+	log.Printf("deleting collection with id '%s' ...", id)
+	return t.Repository.DeleteCollectionByID(id)
 }

@@ -18,7 +18,7 @@ import (
 type Suite struct {
 	gormDB     *gorm.DB
 	mock       sqlmock.Sqlmock
-	repository interfaces.ITaskRepository
+	repository interfaces.IRepository
 }
 
 // AnyTime is to be used for with args in sqlmock for timestamps
@@ -46,7 +46,7 @@ func (s *Suite) SetupSuite() {
 		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 
-	s.repository = NewTaskRepository(s.gormDB)
+	s.repository = NewRepository(s.gormDB)
 }
 
 func TestNewTaskRepository(t *testing.T) {
@@ -57,18 +57,18 @@ func TestNewTaskRepository(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want interfaces.ITaskRepository
+		want interfaces.IRepository
 	}{
 		{
 			name: "should create new task repository correctly",
 			args: args{db: db},
-			want: &TaskRepository{db: db},
+			want: &Repository{db: db},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewTaskRepository(tt.args.db); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("NewTaskRepository() = %v, want %v", got, tt.want)
+			if got := NewRepository(tt.args.db); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewRepository() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -108,7 +108,7 @@ func TestTaskRepository_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			taskRepo := &TaskRepository{
+			taskRepo := &Repository{
 				db: tt.fields.db,
 			}
 			testSuite.mock.ExpectBegin()
@@ -118,9 +118,9 @@ func TestTaskRepository_Create(t *testing.T) {
 				WillReturnResult(sqlmock.NewResult(0, 0))
 			testSuite.mock.ExpectCommit()
 
-			if err := taskRepo.Create(tt.args.task); (err != nil) != tt.wantErr {
+			if err := taskRepo.CreateTask(tt.args.task); (err != nil) != tt.wantErr {
 				fmt.Println("here is the error: ", err)
-				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CreateTask() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -150,7 +150,7 @@ func TestTaskRepository_DeleteByID(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskRepository{
+			t := &Repository{
 				db: tt.fields.db,
 			}
 
@@ -161,8 +161,8 @@ func TestTaskRepository_DeleteByID(t1 *testing.T) {
 				WillReturnResult(sqlmock.NewResult(0, 0))
 			testSuite.mock.ExpectCommit()
 
-			if err := t.DeleteByID(tt.args.id); (err != nil) != tt.wantErr {
-				t1.Errorf("DeleteByID() error = %v, wantErr %v", err, tt.wantErr)
+			if err := t.DeleteTaskByID(tt.args.id); (err != nil) != tt.wantErr {
+				t1.Errorf("DeleteTaskByID() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -205,7 +205,7 @@ func TestTaskRepository_FindAll(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskRepository{
+			t := &Repository{
 				db: tt.fields.db,
 			}
 			columns := []string{"id", "title", "description", "priority", "status"}
@@ -214,13 +214,13 @@ func TestTaskRepository_FindAll(t1 *testing.T) {
 
 			testSuite.mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "tasks"`)).WillReturnRows(rows)
 
-			got, err := t.FindAll()
+			got, err := t.FindAllTasks()
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("FindAll() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("FindAllTasks() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("FindAll() got = %v, want %v", got, tt.want)
+				t1.Errorf("FindAllTasks() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -257,7 +257,7 @@ func TestTaskRepository_FindByID(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskRepository{
+			t := &Repository{
 				db: tt.fields.db,
 			}
 
@@ -267,13 +267,13 @@ func TestTaskRepository_FindByID(t1 *testing.T) {
 				WillReturnRows(sqlmock.NewRows([]string{"id"}).
 					AddRow(tt.args.id))
 
-			got, err := t.FindByID(tt.args.id)
+			got, err := t.FindTaskByID(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t1.Errorf("FindByID() error = %v, wantErr %v", err, tt.wantErr)
+				t1.Errorf("FindTaskByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t1.Errorf("FindByID() got = %v, want %v", got, tt.want)
+				t1.Errorf("FindTaskByID() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -308,7 +308,7 @@ func TestTaskRepository_Update(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := &TaskRepository{
+			t := &Repository{
 				db: tt.fields.db,
 			}
 			testSuite.mock.ExpectBegin()
@@ -317,8 +317,8 @@ func TestTaskRepository_Update(t1 *testing.T) {
 				WillReturnResult(sqlmock.NewResult(1, 1))
 			testSuite.mock.ExpectCommit()
 
-			if err := t.Update(tt.args.fields, tt.args.id); (err != nil) != tt.wantErr {
-				t1.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
+			if err := t.UpdateTask(tt.args.fields, tt.args.id); (err != nil) != tt.wantErr {
+				t1.Errorf("UpdateTask() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
